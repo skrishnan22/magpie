@@ -15,36 +15,37 @@ function longDoc(sections: number, parasPerSection: number): string {
 const bodyOf = (chunkText: string) => chunkText.slice(chunkText.indexOf("\n\n") + 2);
 
 describe("chunkMarkdown", () => {
-  it("keeps a short document as one chunk prefixed with its title", () => {
-    expect(chunkMarkdown("hello world", "My Title")).toEqual([
+  it("keeps a short document as one chunk prefixed with its title", async () => {
+    expect(await chunkMarkdown("hello world", "My Title")).toEqual([
       { idx: 0, heading: null, text: "My Title\n\nhello world" },
     ]);
   });
 
-  it("splits long documents into bounded, overlapping chunks labelled with their heading", () => {
-    const chunks = chunkMarkdown(longDoc(4, 6), "Doc", { maxTokens: 128, overlapRatio: 0.15 });
+  it("splits long documents into bounded chunks labelled with their heading, losing no text", async () => {
+    const doc = longDoc(4, 6);
+    const chunks = await chunkMarkdown(doc, "Doc", { maxTokens: 128 });
 
     expect(chunks.length).toBeGreaterThan(3);
     chunks.forEach((c, i) => {
       expect(c.idx).toBe(i);
       expect(bodyOf(c.text).length).toBeLessThanOrEqual(128 * 4);
     });
-
-    // Each chunk starts with overlap carried from the end of the previous one.
-    for (let i = 0; i + 1 < chunks.length; i++) {
-      const prev = bodyOf(chunks[i]!.text);
-      const nextStart = bodyOf(chunks[i + 1]!.text).slice(0, 40);
-      expect(prev.slice(-(128 * 4 * 0.15 + 40))).toContain(nextStart);
-    }
+    for (const para of doc.split("\n\n")) expect(chunks.some((c) => c.text.includes(para))).toBe(true);
 
     const part3 = chunks.find((c) => c.heading === "Part 3");
     expect(part3?.text.startsWith("Doc — Part 3\n\n")).toBe(true);
     expect(part3?.text).toContain("section 3 paragraph");
   });
 
-  it("splits a giant paragraph that has no blank lines", () => {
-    const chunks = chunkMarkdown(sentence.repeat(200), "T", { maxTokens: 128 });
+  it("splits a giant paragraph into overlapping chunks", async () => {
+    const chunks = await chunkMarkdown(sentence.repeat(200), "T", { maxTokens: 128 });
     expect(chunks.length).toBeGreaterThan(5);
     chunks.forEach((c) => expect(bodyOf(c.text).length).toBeLessThanOrEqual(512));
+
+    // A cut mid-paragraph carries the end of the previous chunk into the next one.
+    for (let i = 0; i + 1 < chunks.length; i++) {
+      const prevEnd = bodyOf(chunks[i]!.text).slice(-30);
+      expect(bodyOf(chunks[i + 1]!.text).slice(0, 128 * 4 * 0.15 + 30)).toContain(prevEnd);
+    }
   });
 });
