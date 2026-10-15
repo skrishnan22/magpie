@@ -1,0 +1,23 @@
+{
+  "name": "@magpie/worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --var VECTOR_NAMESPACE:dev",
+    "deploy": "wrangler deploy",
+    "types": "wrangler types",
+    "test": "vitest run",
+    "typecheck": "tsc -p ."
+  },
+  "dependencies": {
+    "@magpie/core": "workspace:*",
+    "@mozilla/readability": "^0.6.0",
+    "linkedom": "^0.18.13"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.4.1",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11",
+    "wrangler": "^4.150.0"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "magpie",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-13",
+  // LangChain's text splitter pulls in LangSmith, which imports node:fs and node:worker_threads.
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  // pnpm dev overrides this to "dev"; deployed vectors use "prod".
+  "vars": { "VECTOR_NAMESPACE": "prod" },
+  "ai": { "binding": "AI", "remote": true },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "magpie",
+      "database_id": "af3e1a3d-28d1-4dd6-bf6c-d8a4658af820",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [{ "binding": "BUCKET", "bucket_name": "magpie" }],
+  // Vectorize has no local emulator, so local dev talks to the real index (in the "dev" namespace).
+  "vectorize": [{ "binding": "VECTORS", "index_name": "magpie", "remote": true }]
+}
