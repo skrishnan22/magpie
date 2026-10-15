@@ -15,6 +15,21 @@ function longDoc(sections: number, parasPerSection: number): string {
 const bodyOf = (chunkText: string) => chunkText.slice(chunkText.indexOf("\n\n") + 2);
 
 describe("chunkMarkdown", () => {
+  it.each([
+    "```md\n~~~\n# fake\n" + sentence.repeat(10) + "\n```",
+    "````md\n```\n# fake\n" + sentence.repeat(10) + "\n````",
+    "   ```md\n# fake\n" + sentence.repeat(10) + "\n   ```",
+  ])("ignores headings inside fenced code", async (markdown) => {
+    const chunks = await chunkMarkdown(markdown, "Doc", { maxTokens: 32 });
+    expect(chunks.length).toBeGreaterThan(1);
+    expect(chunks.every((chunk) => chunk.heading === null)).toBe(true);
+  });
+
+  it("preserves hashes that belong to a heading's text", async () => {
+    const chunks = await chunkMarkdown("## C#\n\nA language.", "Doc");
+    expect(chunks[0]?.heading).toBe("C#");
+  });
+
   it("keeps a short document as one chunk prefixed with its title", async () => {
     expect(await chunkMarkdown("hello world", "My Title")).toEqual([
       { idx: 0, heading: null, text: "My Title\n\nhello world" },

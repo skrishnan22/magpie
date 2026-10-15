@@ -21,5 +21,6 @@ describe("schema", () => {
 
     await env.DB.prepare("DELETE FROM documents WHERE id = 'd1'").run();
     expect(await env.DB.prepare("SELECT count(*) AS n FROM chunks").first("n")).toBe(0);
+    expect(await env.DB.prepare("SELECT chunk_id FROM chunks_fts WHERE chunks_fts MATCH ?").bind('"hoarding"').first()).toBeNull();
   });
 });

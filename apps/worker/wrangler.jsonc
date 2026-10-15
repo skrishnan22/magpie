@@ -6,7 +6,7 @@
   // LangChain's text splitter pulls in LangSmith, which imports node:fs and node:worker_threads.
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
-  // Every vector lives in this Vectorize namespace; .dev.vars overrides it to "dev" so local runs never touch prod.
+  // pnpm dev overrides this to "dev"; deployed vectors use "prod".
   "vars": { "VECTOR_NAMESPACE": "prod" },
   "ai": { "binding": "AI", "remote": true },
   "d1_databases": [
