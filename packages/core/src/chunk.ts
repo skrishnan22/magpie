@@ -13,10 +13,8 @@ export interface ChunkOptions {
 }
 
 const CHARS_PER_TOKEN = 4;
-const HEADING = /^#{1,6}\s+(.+?)\s*#*\s*$/;
-const FENCE = /^(```|~~~)/;
-
-export const estimateTokens = (text: string): number => Math.ceil(text.length / CHARS_PER_TOKEN);
+const HEADING = /^ {0,3}#{1,6}[\t ]+(.+?)(?:[\t ]+#+)?[\t ]*$/;
+const FENCE = /^ {0,3}(`{3,}|~{3,})(.*)$/;
 
 // Splitting is LangChain's; we only add the `title — heading` prefix that makes chunks retrievable.
 export async function chunkMarkdown(markdown: string, title: string, options: ChunkOptions = {}): Promise<Chunk[]> {
@@ -45,10 +43,15 @@ export async function chunkMarkdown(markdown: string, title: string, options: Ch
 function headingOffsets(markdown: string): { offset: number; text: string }[] {
   const out: { offset: number; text: string }[] = [];
   let offset = 0;
-  let inFence = false;
+  let fence = "";
   for (const line of markdown.split("\n")) {
-    if (FENCE.test(line)) inFence = !inFence;
-    const match = inFence ? null : HEADING.exec(line);
+    const marker = FENCE.exec(line);
+    if (marker) {
+      const run = marker[1]!;
+      if (!fence) fence = run;
+      else if (run[0] === fence[0] && run.length >= fence.length && !marker[2]!.trim()) fence = "";
+    }
+    const match = fence ? null : HEADING.exec(line);
     if (match) out.push({ offset, text: match[1]! });
     offset += line.length + 1;
   }
