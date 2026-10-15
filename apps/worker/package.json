@@ -10,7 +10,9 @@
     "typecheck": "tsc -p ."
   },
   "dependencies": {
-    "@magpie/core": "workspace:*"
+    "@magpie/core": "workspace:*",
+    "@mozilla/readability": "^0.6.0",
+    "linkedom": "^0.18.13"
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.4.1",
