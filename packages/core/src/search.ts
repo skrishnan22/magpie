@@ -8,13 +8,8 @@ export interface Fused {
 export function reciprocalRankFusion(rankings: string[][], k = 60): Fused[] {
   const scores = new Map<string, number>();
   for (const ranking of rankings) {
-    const seen = new Set<string>();
-    let rank = 0;
-    for (const id of ranking) {
-      if (seen.has(id)) continue;
-      seen.add(id);
+    for (const [rank, id] of [...new Set(ranking)].entries()) {
       scores.set(id, (scores.get(id) ?? 0) + 1 / (k + rank + 1));
-      rank++;
     }
   }
   return [...scores]
