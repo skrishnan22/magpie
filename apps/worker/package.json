@@ -12,7 +12,8 @@
   "dependencies": {
     "@magpie/core": "workspace:*",
     "@mozilla/readability": "^0.6.0",
-    "linkedom": "^0.18.13"
+    "linkedom": "^0.18.13",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@cloudflare/vitest-plugin": "^1.4.1",
