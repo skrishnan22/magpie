@@ -1,12 +1,5 @@
-import { env, exports } from "cloudflare:workers";
+import { env } from "cloudflare:workers";
 import { describe, expect, it } from "vitest";
-
-describe("worker", () => {
-  it("serves /health", async () => {
-    const res = await exports.default.fetch(new Request("https://magpie.test/health"));
-    expect(await res.json()).toEqual({ ok: true });
-  });
-});
 
 describe("schema", () => {
   it("finds chunks by stemmed keyword and cascades chunk deletes with their document", async () => {

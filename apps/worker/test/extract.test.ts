@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { NonRetryableError } from "cloudflare:workflows";
 import { extractMarkdown, type MarkdownConverter } from "../src/extract";
 
 const encode = (s: string) => new TextEncoder().encode(s).buffer as ArrayBuffer;
@@ -52,8 +53,7 @@ describe("extractMarkdown", () => {
   });
 
   it("refuses unsupported content types without retrying", async () => {
-    await expect(extractMarkdown(echo, encode("\x89PNG"), "image/png", "https://x.test/a.png")).rejects.toThrow(
-      /unsupported content type: image\/png/,
-    );
+    const extraction = extractMarkdown(echo, encode("\x89PNG"), "image/png", "https://x.test/a.png");
+    await expect(extraction).rejects.toBeInstanceOf(NonRetryableError);
   });
 });

@@ -4,7 +4,7 @@ const unauthorized = () =>
   new Response("unauthorized", { status: 401, headers: { "www-authenticate": 'Bearer realm="magpie"' } });
 
 export default {
-  async fetch(request, env, ctx): Promise<Response> {
+  async fetch(request, env): Promise<Response> {
     const { pathname } = new URL(request.url);
 
     if (pathname === "/health") return Response.json({ ok: true });

@@ -12,6 +12,14 @@ describe("router", () => {
     expect(await res.json()).toEqual({ ok: true });
   });
 
+  it.each([
+    ["/ingest", "test-ingest-token"],
+    ["/mcp", "test-mcp-token"],
+  ])("authorizes the scoped token on %s", async (path, token) => {
+    const res = await call(path, { method: "POST", headers: bearer(token) });
+    expect(res.status).toBe(501);
+  });
+
   it("rejects /ingest without a token", async () => {
     expect((await call("/ingest", { method: "POST" })).status).toBe(401);
   });
