@@ -1,5 +1,7 @@
 import { hasBearer } from "./auth";
 
+export { IngestWorkflow } from "./workflow";
+
 const unauthorized = () =>
   new Response("unauthorized", { status: 401, headers: { "www-authenticate": 'Bearer realm="magpie"' } });
 
