@@ -6,6 +6,8 @@
   // LangChain's text splitter pulls in LangSmith, which imports node:fs and node:worker_threads.
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
+  "secrets": { "required": ["INGEST_TOKEN", "MCP_TOKEN"] },
+  "workflows": [{ "name": "magpie-ingest", "binding": "INGEST", "class_name": "IngestWorkflow" }],
   // pnpm dev overrides this to "dev"; deployed vectors use "prod".
   "vars": { "VECTOR_NAMESPACE": "prod" },
   "ai": { "binding": "AI", "remote": true },
