@@ -1,4 +1,5 @@
 import { hasBearer } from "./auth";
+import { handleIngest } from "./ingest";
 
 export { IngestWorkflow } from "./workflow";
 
@@ -14,7 +15,7 @@ export default {
     if (pathname === "/ingest") {
       if (request.method !== "POST") return new Response("method not allowed", { status: 405 });
       if (!(await hasBearer(request, env.INGEST_TOKEN))) return unauthorized();
-      return new Response("not implemented", { status: 501 }); // replaced in Task 6
+      return handleIngest(request, env);
     }
 
     if (pathname === "/mcp") {
